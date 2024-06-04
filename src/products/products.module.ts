@@ -9,6 +9,7 @@ import { BrandsController } from './controllers/brands.controller';
 @Module({
   controllers: [ProductsController, CategoriesController, BrandsController],
   providers: [ProductsService, CategoriesService, BrandsService],
+  exports: [ProductsService]   // HEMOS IMPORTADO EL SERVICIO DE PRODUCTOS. SOLAMENTE SE PODRAN USAR LOS SERVICIOS O CONTROLADORES QUE ESTEN ADENTRO DE ESE ARRAY.
 
 })
 export class ProductsModule {}

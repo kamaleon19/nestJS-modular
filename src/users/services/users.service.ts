@@ -1,9 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config'; // IMPORTAMOS EL MODULO QUE NOS PERMITE INYECTAR LAS VARIABLES DE ENTORNO
 import { User } from '../entities/user.entity';
 import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
+import { ProductsService } from 'src/products/services/products.service'; // IMPORTAMOS UN SERVICIO DE OTRO MODULO Y LO USAMOS EN OTRO SERVICIO, EN ESTE CASO EL SERVICIO DE USERS.
 
 @Injectable()
 export class UsersService {
+  constructor(
+    private productsService: ProductsService,
+    private configService: ConfigService, // INYECTAMOS LAS DEPENDENCIAS EN EL CONSTRUCTOR
+  ) {}
+
   private counterId = 1;
   private users: User[] = [
     {
@@ -16,6 +23,10 @@ export class UsersService {
   ];
 
   findAll() {
+    const apiKey= this.configService.get('API_KEY') // AQUI PODEMOS ACCEDER A LAS VARIABLES DE ENTORNO QUE HAYAMOS CREADO.
+    const db = this.configService.get('DATABASE_NAME')
+    console.log(apiKey, db);
+
     return this.users;
   }
 
@@ -54,5 +65,14 @@ export class UsersService {
     }
     this.users.splice(index, 1);
     return true;
+  }
+
+  getOrdersByUser(id: number) {
+    const user = this.findOne(id);
+    return {
+      date: new Date(),
+      user,
+      products: this.productsService.findAll(),
+    };
   }
 }
